@@ -1,4 +1,5 @@
 const {Router} = require("express");
+const bcrypt = require("bcrypt");
 const {userModel} = require("../db");
 const jwt = require("jsonwebtoken");
 const JWT_USER_PASSWORD = "aladid123"
@@ -6,9 +7,10 @@ const userRouter = Router();
 
     userRouter.post("/signup", async function(req,res){
        const {email,password,firstname,lastname} = req.body;
+       const hashedPassword = await bcrypt.hash(password, 10);
        await userModel.create({
             email: email,
-            password: password,
+            password: hashedPassword,
             firstname: firstname,
             lastname: lastname
         })
@@ -21,9 +23,15 @@ userRouter.post("/signin",async function(req,res){
     const {email,password} = req.body;
 
     const user = await userModel.findOne({
-        email: email,
-        password: password
+        email: email
     })
+
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+        return res.status(403).json({
+            message: "Invalid credentials"
+        });
+    }
 
     if(user){
     const token =  jwt.sign({

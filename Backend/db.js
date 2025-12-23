@@ -1,6 +1,13 @@
 const mongoose = require("mongoose");
 console.log("connected to")
-mongoose.connect("")
+mongoose.connect("process.env.MONGO_URL")
+.then(() => {
+        console.log("MongoDB connected");
+    })
+    .catch((err) => {
+        console.log("MongoDB connection error:", err);
+    });
+
 const Schema = mongoose.Schema;
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -20,7 +27,7 @@ email: {type: String, unique: true},
 });
 
 const courseSchema = new Schema({
-    tittle: String,
+    title: String,
     description: String,
     price: Number,
     imageUrl: String,
