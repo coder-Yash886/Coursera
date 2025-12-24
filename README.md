@@ -14,6 +14,8 @@ Backend for a course selling platform built using Node.js and Express.
 
 \- Purchase Courses
 
+\- Create Course
+
 \- View Courses
 
 
@@ -34,7 +36,7 @@ cd Backend
 
 npm install
 
-node index.js
+npm run dev
 
 
 

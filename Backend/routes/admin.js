@@ -71,7 +71,7 @@ adminRouter.post("/course",adminmiddleware,async function(req,res){
         description,
         imageUrl,
         price,
-        creterid: adminId
+        cretorid: adminId
 
     })
     res.json({
@@ -89,7 +89,7 @@ adminRouter.put("/course",adminmiddleware,async function(req,res){
    const course =  await courseModel.updateOne({
 
     _id: courseId,
-    createrId: adminId
+    creatorId: adminId
    },{
  
         title,

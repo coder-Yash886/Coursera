@@ -1,30 +1,38 @@
-const {Router} = require("express");
+const { Router } = require("express");
 const bcrypt = require("bcrypt");
-const {userModel} = require("../db");
+const { userModel, purchaseModel } = require("../db");
 const jwt = require("jsonwebtoken");
-const {JWT_USER_PASSWORD} = require("../config");
+const { JWT_USER_PASSWORD } = require("../config");
+const { usermiddleware } = require("../middleware/user");
+
 const userRouter = Router();
 
-    userRouter.post("/signup", async function(req,res){
-       const {email,password,firstname,lastname} = req.body;
-       const hashedPassword = await bcrypt.hash(password, 10);
-       await userModel.create({
-            email: email,
-            password: hashedPassword,
-            firstname: firstname,
-            lastname: lastname
-        })
+userRouter.post("/signup", async function (req, res) {
+    const { email, password, firstname, lastname } = req.body;
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await userModel.create({
+        email,
+        password: hashedPassword,
+        firstname,
+        lastname
+    });
+
     res.json({
-        message: "Signup Succeeded "
-    })
-})
+        message: "Signup Succeeded"
+    });
+});
 
-userRouter.post("/signin",async function(req,res){
-    const {email,password} = req.body;
+userRouter.post("/signin", async function (req, res) {
+    const { email, password } = req.body;
 
-    const user = await userModel.findOne({
-        email: email
-    })
+    const user = await userModel.findOne({ email });
+    if (!user) {
+        return res.status(403).json({
+            message: "Invalid credentials"
+        });
+    }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
@@ -33,32 +41,28 @@ userRouter.post("/signin",async function(req,res){
         });
     }
 
-    if(user){
-    const token =  jwt.sign({
-        id: user._id
-     },JWT_USER_PASSWORD);
-     res.json({
-        token: token
-    
-     })
-    }else{
-        res.status(403).json({
-            message: "Incorrect credentials"
-        })
-    }
+    const token = jwt.sign(
+        { id: user._id },
+        JWT_USER_PASSWORD
+    );
+
     res.json({
-        message: "signin endpoint"
-    })
-})
+        token
+    });
+});
 
-userRouter.get("/purchases",function(req,res){
+userRouter.get("/purchases",usermiddleware, async function (req, res) {
+    const userId = req.userId;
+
+    const purchases = await purchaseModel.find({
+        userId
+    });
+
     res.json({
-        message: "signin endpoint"
-    })
-})
-
-
+        purchases
+    });
+});
 
 module.exports = {
-    userRouter: userRouter
-}
+    userRouter
+};
