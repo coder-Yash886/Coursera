@@ -8,23 +8,23 @@ Backend for a course selling platform built using Node.js and Express.
 
 ## Features
 
-\- User Signup
+- User Signup
 
-\- User Signin
+- User Signin
 
-\- Purchase Courses
+- Purchase Courses
 
-\- Create Course
+- Create Course
 
-\- View Courses
+- View Courses
 
 
 
 ## Tech Stack
 
-\- Node.js
+- Node.js
 
-\- Express.js
+- Express.js
 
 
 
